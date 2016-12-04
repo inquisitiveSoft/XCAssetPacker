@@ -27,8 +27,6 @@ class Node {
     
     
     func childNode(named childName: String) -> Node {
-        if childName.
-    
         for child in children {
             if child.name.compare(childName, options: [.caseInsensitive]) == .orderedSame {
                 return child
@@ -95,7 +93,7 @@ class AssetCatalog {
     
     let numberOfRootPathComponents: Int
     let contentsFileName = "Contents.json"
-    let properties: [String: Any]?
+    let properties: [String: Any]
     
     let fileManager = FileManager()
     
@@ -105,16 +103,23 @@ class AssetCatalog {
         self.root = Node(name: rootURL.lastPathComponent, parent: nil)
         self.numberOfRootPathComponents = rootURL.pathComponents.count
         
-        self.properties = properties
+        self.properties = properties ?? [:]
     }
     
     
     func addImageAsset(from sourceURL: URL, inDirectory sourceDirectoryURL: URL) {
         let numberOfPathComponents = sourceDirectoryURL.pathComponents.count
         let fileName = sourceURL.lastPathComponent
-        let properties = imageProperties(for: fileName)
         
-        let imageSetFileName = (properties.name as NSString).appendingPathExtension(imageSetFileExtension)!
+        if let skip = properties["skip-images"] as? [String: Any],
+            let patternsToSkip = skip["patterns"] as? [String],
+            fileName.isMatchedBy(patternsToSkip) {
+            return
+        }
+    
+        
+        let imageProperties = self.imageProperties(for: fileName)
+        let imageSetFileName = (imageProperties.name as NSString).appendingPathExtension(imageSetFileExtension)!
         
         var pathComponents = sourceURL.pathComponents.suffix(from: numberOfPathComponents)
         _ = pathComponents.popLast()
@@ -127,13 +132,12 @@ class AssetCatalog {
         }
         
         let imageNode = currentNode.childNode(named: fileName)
-        imageNode.format = properties.format
+        imageNode.format = imageProperties.format
         imageNode.sourceURL = sourceURL
     }
     
     
     func applyChanges() throws {
-        
         try applyChanges(forNode: root)
     }
     
@@ -230,7 +234,7 @@ class AssetCatalog {
     
     
     func contentsDictionaryFor(node: Node, imageFormats: [ImageFormat]) -> [String: Any] {
-        var contents: [String : Any] = (properties?["info"] as? [String: Any]) ?? [
+        var contents: [String : Any] = (properties["info"] as? [String: Any]) ?? [
             "info" : [
                 "version" : 1,
                 "author" : "xcode"
@@ -239,14 +243,14 @@ class AssetCatalog {
         
         var combinedProperties: [String: Any] = [:]
         
-        if let baseProperties = properties?["base"] as? [String: Any] {
+        if let baseProperties = properties["base"] as? [String: Any] {
             for (key, value) in baseProperties {
                 combinedProperties[key] = value
             }
         }
         
         
-        if let devices = properties?["devices"] as? [[String: Any]] {
+        if let devices = properties["devices"] as? [[String: Any]] {
             for device in devices {
                 if let deviceType = device["device-type"] as? String,
                     deviceType == imageFormats.first?.deviceType,
@@ -260,21 +264,13 @@ class AssetCatalog {
         }
         
         
-        if let customProperties = properties?["custom"] as? [[String: Any]] {
+        if let customProperties = properties["custom"] as? [[String: Any]] {
             for customProperty in customProperties {
-                if let patterns = customProperty["patterns"] as? [String] {
-                    for pattern in patterns {
-                        if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]),
-                            let properties = customProperty["properties"] as? [String: Any] {
-                            let nodeName = node.name
-                            let range = NSRange(location: 0, length: (nodeName as NSString).length)
-                            
-                            if regex.firstMatch(in: nodeName, options: [], range: range) != nil {
-                                for (key, value) in properties {
-                                    combinedProperties[key] = value
-                                }
-                            }
-                        }
+                if let patterns = customProperty["patterns"] as? [String],
+                    node.name.isMatchedBy(patterns),
+                    let properties = customProperty["properties"] as? [String: Any] {
+                    for (key, value) in properties {
+                        combinedProperties[key] = value
                     }
                 }
             }
@@ -338,6 +334,33 @@ enum ImageFormat {
 //    }
 
 }
+
+
+extension String {
+
+    func isMatchedBy(_ patterns: [String]) -> Bool {
+        for pattern in patterns {
+            if isMatchedBy(pattern) {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    
+    func isMatchedBy(_ pattern: String) -> Bool {
+        if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) {
+            let range = NSRange(location: 0, length: (self as NSString).length)
+            
+            return regex.firstMatch(in: self, options: [], range: range) != nil
+        }
+        
+        return false
+    }
+
+}
+
 
 
 extension URL {
