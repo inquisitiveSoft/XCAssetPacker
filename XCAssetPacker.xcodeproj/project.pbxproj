@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A07727C1DF9634A0068A929 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A07727B1DF9634A0068A929 /* Extensions.swift */; };
+		4A07727E1DF963C70068A929 /* ImageFormats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A07727D1DF963C70068A929 /* ImageFormats.swift */; };
+		4A0772821DF9731B0068A929 /* CommandLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A07727F1DF9731B0068A929 /* CommandLine.swift */; };
+		4A0772831DF9731B0068A929 /* Option.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0772801DF9731B0068A929 /* Option.swift */; };
+		4A0772841DF9731B0068A929 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0772811DF9731B0068A929 /* StringExtensions.swift */; };
 		4A56D14B1DE5B573000B40D8 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A56D14A1DE5B573000B40D8 /* main.swift */; };
 		4A56D1591DE5BA85000B40D8 /* AssetCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A56D1581DE5BA85000B40D8 /* AssetCatalog.swift */; };
-		4A7023EC1DF46B6500F04BD0 /* CommandLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7023E91DF46B6500F04BD0 /* CommandLine.swift */; };
-		4A7023ED1DF46B6500F04BD0 /* Option.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7023EA1DF46B6500F04BD0 /* Option.swift */; };
-		4A7023EE1DF46B6500F04BD0 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7023EB1DF46B6500F04BD0 /* StringExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,12 +29,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4A07727B1DF9634A0068A929 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		4A07727D1DF963C70068A929 /* ImageFormats.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFormats.swift; sourceTree = "<group>"; };
+		4A07727F1DF9731B0068A929 /* CommandLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommandLine.swift; path = CommandLine/CommandLineKit/CommandLine.swift; sourceTree = "<group>"; };
+		4A0772801DF9731B0068A929 /* Option.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Option.swift; path = CommandLine/CommandLineKit/Option.swift; sourceTree = "<group>"; };
+		4A0772811DF9731B0068A929 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StringExtensions.swift; path = CommandLine/CommandLineKit/StringExtensions.swift; sourceTree = "<group>"; };
 		4A56D1471DE5B573000B40D8 /* XCAssetPacker */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = XCAssetPacker; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A56D14A1DE5B573000B40D8 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4A56D1581DE5BA85000B40D8 /* AssetCatalog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetCatalog.swift; sourceTree = "<group>"; };
-		4A7023E91DF46B6500F04BD0 /* CommandLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommandLine.swift; path = CommandLine/CommandLineKit/CommandLine.swift; sourceTree = SOURCE_ROOT; };
-		4A7023EA1DF46B6500F04BD0 /* Option.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Option.swift; path = CommandLine/CommandLineKit/Option.swift; sourceTree = SOURCE_ROOT; };
-		4A7023EB1DF46B6500F04BD0 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StringExtensions.swift; path = CommandLine/CommandLineKit/StringExtensions.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +72,8 @@
 			children = (
 				4A56D14A1DE5B573000B40D8 /* main.swift */,
 				4A56D1581DE5BA85000B40D8 /* AssetCatalog.swift */,
+				4A07727D1DF963C70068A929 /* ImageFormats.swift */,
+				4A07727B1DF9634A0068A929 /* Extensions.swift */,
 			);
 			path = XCAssetPacker;
 			sourceTree = "<group>";
@@ -75,9 +81,9 @@
 		4A56D1571DE5B5AB000B40D8 /* CommandLine */ = {
 			isa = PBXGroup;
 			children = (
-				4A7023E91DF46B6500F04BD0 /* CommandLine.swift */,
-				4A7023EA1DF46B6500F04BD0 /* Option.swift */,
-				4A7023EB1DF46B6500F04BD0 /* StringExtensions.swift */,
+				4A07727F1DF9731B0068A929 /* CommandLine.swift */,
+				4A0772801DF9731B0068A929 /* Option.swift */,
+				4A0772811DF9731B0068A929 /* StringExtensions.swift */,
 			);
 			name = CommandLine;
 			path = XCAssetPacker;
@@ -142,10 +148,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A7023ED1DF46B6500F04BD0 /* Option.swift in Sources */,
-				4A7023EC1DF46B6500F04BD0 /* CommandLine.swift in Sources */,
-				4A7023EE1DF46B6500F04BD0 /* StringExtensions.swift in Sources */,
+				4A0772821DF9731B0068A929 /* CommandLine.swift in Sources */,
+				4A07727C1DF9634A0068A929 /* Extensions.swift in Sources */,
+				4A07727E1DF963C70068A929 /* ImageFormats.swift in Sources */,
+				4A0772841DF9731B0068A929 /* StringExtensions.swift in Sources */,
 				4A56D1591DE5BA85000B40D8 /* AssetCatalog.swift in Sources */,
+				4A0772831DF9731B0068A929 /* Option.swift in Sources */,
 				4A56D14B1DE5B573000B40D8 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -197,6 +205,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -238,6 +247,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 			};
 			name = Release;
 		};

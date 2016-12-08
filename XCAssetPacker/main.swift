@@ -4,7 +4,19 @@
 //
 //  Created by Harry Jordan on 23/11/2016.
 //  Copyright © 2016 Inquisitive Software. All rights reserved.
-//
+//	
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+// 
 
 import Foundation
 
@@ -16,15 +28,15 @@ let assetPackageExtension = "xcassets"
 
 // Setup command line input
 let inputPath = StringOption(shortFlag: "i", longFlag: "input", required: true, helpMessage: "Path to the input folder")
-let rules = StringOption(shortFlag: "r", longFlag: "rules", required: false, helpMessage: "Location of a rules .json file")
-let outputPath = StringOption(shortFlag: "o", longFlag: "output", required: true, helpMessage: "Path to the output file")
-let overwrite = BoolOption(shortFlag: "f", longFlag: "force", helpMessage: "Overwrite .xcassets package")
-let help = BoolOption(shortFlag: "h", longFlag: "help", helpMessage: "Prints a help message.")
-//let verbosity = CounterOption(shortFlag: "v", longFlag: "verbose",
-//  helpMessage: "Print verbose messages. Specify multiple times to increase verbosity.")
+let configurationOption = StringOption(shortFlag: "c", longFlag: "config", required: false, helpMessage: "The location of a json configuration file or folder. If none is specified then uses sensible defaults.")
+let outputPathOption = StringOption(shortFlag: "o", longFlag: "output", required: true, helpMessage: "Path to the output file or folder. If a folder is given then an Assets.xcassets package will be created inside it.")
+let overwriteOption = BoolOption(shortFlag: "f", longFlag: "force", helpMessage: "Overwrite .xcassets package")
+let helpOption = BoolOption(shortFlag: "h", longFlag: "help", helpMessage: "Prints a help message.")
+let verbosityOption = BoolOption(shortFlag: "v", longFlag: "verbose", helpMessage: "Print verbose messages")
+
 
 let cli = CommandLine()
-cli.addOptions(inputPath, rules, outputPath, overwrite)
+cli.addOptions(inputPath, configurationOption, outputPathOption, overwriteOption, helpOption, verbosityOption)
 
 do {
     try cli.parse()
@@ -50,16 +62,16 @@ guard let fileEnumerator = fileManager.enumerator(at: sourceDirectoryURL, includ
 }
 
 
-// Load .json
-var properties: [String: Any] = [:]
+// Load a configuration .json
+var configuration: [String: Any] = [:]
 
-if let rulesFilePath = rules.value {
-    let propertiesFileURL = URL(fileURLWithPath: rulesFilePath).absoluteURL
+if let configurationFilePath = configurationOption.value {
+    let configurationFileURL = URL(fileURLWithPath: configurationFilePath).absoluteURL
     
-    if let data = try? Data(contentsOf: propertiesFileURL),
+    if let data = try? Data(contentsOf: configurationFileURL),
         let json = try? JSONSerialization.jsonObject(with: data, options: []),
-        let propertiesJSON = json as? [String: Any] {
-        properties = propertiesJSON
+        let configurationJSON = json as? [String: Any] {
+        configuration = configurationJSON
     }
 }
 
@@ -67,7 +79,7 @@ if let rulesFilePath = rules.value {
 // Validate output
 var destinationURL: URL
 
-if let output = outputPath.value {
+if let output = outputPathOption.value {
     destinationURL = URL(fileURLWithPath: output).absoluteURL
 } else {
     destinationURL = URL(fileURLWithPath: fileManager.currentDirectoryPath)
@@ -83,8 +95,8 @@ if fileManager.fileExists(atPath: destinationURL.path, isDirectory: &isDirectory
 }
 
 
-// Overwrite an existing asset url
-if overwrite.value || true {
+// Overwrite an existing asset url if --force argument
+if overwriteOption.value {
     try? fileManager.removeItem(at: destinationURL)
 } else {
     let fileExists = fileManager.fileExists(atPath: destinationURL.path)
@@ -98,7 +110,7 @@ if overwrite.value || true {
 
 // Enumarate images
 let validImageExtensions = ["png"]
-let catalog = AssetCatalog(at: destinationURL, properties: properties)
+let catalog = AssetCatalog(at: destinationURL, configuration: configuration)
 
 while let file = fileEnumerator.nextObject() {
     if let fileURL = file as? URL, let resourceValues = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]) {

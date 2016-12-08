@@ -4,7 +4,19 @@
 //
 //  Created by Harry Jordan on 23/11/2016.
 //  Copyright © 2016 Inquisitive Software. All rights reserved.
-//
+//	
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+// 
 
 import Foundation
 
@@ -88,44 +100,48 @@ class Node {
 
 
 class AssetCatalog {
-    let rootURL: URL
-    let root: Node
+    let destinationURL: URL
+    let rootNode: Node
     
     let numberOfRootPathComponents: Int
     let contentsFileName = "Contents.json"
-    let properties: [String: Any]
+    let configuration: [String: Any]
     
     let fileManager = FileManager()
     
     
-    init(at rootURL: URL, properties: [String: Any]?) {
-        self.rootURL = rootURL
-        self.root = Node(name: rootURL.lastPathComponent, parent: nil)
-        self.numberOfRootPathComponents = rootURL.pathComponents.count
+    init(at destinationURL: URL, configuration: [String: Any]?) {
+        self.destinationURL = destinationURL
+        self.rootNode = Node(name: destinationURL.lastPathComponent, parent: nil)
+        self.numberOfRootPathComponents = destinationURL.pathComponents.count
         
-        self.properties = properties ?? [:]
+        self.configuration = configuration ?? [:]
     }
     
+    
+    // MARK: Construct a tree of source images
     
     func addImageAsset(from sourceURL: URL, inDirectory sourceDirectoryURL: URL) {
         let numberOfPathComponents = sourceDirectoryURL.pathComponents.count
         let fileName = sourceURL.lastPathComponent
         
-        if let skip = properties["skip-images"] as? [String: Any],
+        if let skip = configuration["skip-images"] as? [String: Any],
             let patternsToSkip = skip["patterns"] as? [String],
             fileName.isMatchedBy(patternsToSkip) {
             return
         }
-    
         
-        let imageProperties = self.imageProperties(for: fileName)
-        let imageSetFileName = (imageProperties.name as NSString).appendingPathExtension(imageSetFileExtension)!
+        let imageProperties = ImageFormat.inferImageProperties(from: fileName, configuration: configuration)
+        let generalizedImageSetName = (imageProperties.name as NSString).appendingPathExtension(imageSetFileExtension)!
+        
         
         var pathComponents = sourceURL.pathComponents.suffix(from: numberOfPathComponents)
-        _ = pathComponents.popLast()
-        pathComponents.append(imageSetFileName)
         
-        var currentNode = root
+        // Create an asset with a generalized name stripped of the -38, -42 or @2x etc. prefixes
+        _ = pathComponents.popLast()
+        pathComponents.append(generalizedImageSetName)
+        
+        var currentNode = rootNode
         
         for pathComponent in pathComponents {
             currentNode = currentNode.childNode(named: pathComponent)
@@ -137,8 +153,19 @@ class AssetCatalog {
     }
     
     
+    // MARK: Outputing the .xcasset package
+    
     func applyChanges() throws {
-        try applyChanges(forNode: root)
+        let start = Date()
+        try applyChanges(forNode: rootNode)
+        
+        let suffix = destinationURL.pathComponents.suffix(4)
+        let lastPathComponents = suffix.reduce("") { (combined, pathComponent) -> String in
+            return combined + "/" + pathComponent
+        }
+        
+        print(String(format: "Created assets package %@ in %.3f seconds", lastPathComponents, -start.timeIntervalSinceNow))
+
     }
     
     
@@ -153,10 +180,10 @@ class AssetCatalog {
                 imageFormats.append(format)
                 
                 let imageFileName = sourceURL.lastPathComponent
-                let destinationURL = rootURL.appendingPathComponents(node.pathComponents).appendingPathComponent(imageFileName)
+                let assetDestinationURL = destinationURL.appendingPathComponents(node.pathComponents).appendingPathComponent(imageFileName)
                 
                 images.append(imageDictionary(for: imageFileName, type: format))
-                copies.append((sourceURL, destinationURL))
+                copies.append((sourceURL, assetDestinationURL))
             }
         }
         
@@ -168,7 +195,7 @@ class AssetCatalog {
         }
         
         // Create the destination folder
-        let folderURL = rootURL.appendingPathComponents(node.pathComponents)
+        let folderURL = destinationURL.appendingPathComponents(node.pathComponents)
         try fileManager.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: nil)
         
         // Save the Contents.json
@@ -185,6 +212,16 @@ class AssetCatalog {
         }
     }
     
+    
+    func write(_ json: [String: Any], to url: URL, fileName: String) throws {
+        let destinationURL = url.appendingPathComponent(fileName)
+        
+        let jsonData = try JSONSerialization.data(withJSONObject: json, options: [])
+        try jsonData.write(to: destinationURL)
+    }
+    
+    
+    // MARK: Generate json for each component within the .xcassets package
     
     func imageDictionary(for imageName: String, type: ImageFormat) -> [String: Any] {
         var imageDictionary: [String: Any] = [:]
@@ -207,34 +244,8 @@ class AssetCatalog {
     }
     
     
-    func write(_ json: [String: Any], to url: URL, fileName: String) throws {
-        let destinationURL = url.appendingPathComponent(fileName)
-        
-        let jsonData = try JSONSerialization.data(withJSONObject: json, options: [])
-        try jsonData.write(to: destinationURL)
-    }
-    
-    
-    func imageProperties(for fileName: String) -> (name: String, format: ImageFormat) {
-        let sourceImageName = (fileName as NSString).deletingPathExtension
-        var adaptedName: String = sourceImageName
-        var format: ImageFormat = .watch
-        
-        // Look for image extensions
-        if let range = sourceImageName.range(of: "-42", options: [.anchored, .backwards]) {
-            format = .watch42
-            adaptedName = sourceImageName.substring(to: range.lowerBound)
-        } else if let range = sourceImageName.range(of: "-38", options: [.anchored, .backwards]) {
-            format = .watch38
-            adaptedName = sourceImageName.substring(to: range.lowerBound)
-        }
-        
-        return (adaptedName, format)
-    }
-    
-    
     func contentsDictionaryFor(node: Node, imageFormats: [ImageFormat]) -> [String: Any] {
-        var contents: [String : Any] = (properties["info"] as? [String: Any]) ?? [
+        var contents: [String : Any] = (configuration["info"] as? [String: Any]) ?? [
             "info" : [
                 "version" : 1,
                 "author" : "xcode"
@@ -243,15 +254,16 @@ class AssetCatalog {
         
         var combinedProperties: [String: Any] = [:]
         
-        if let baseProperties = properties["base"] as? [String: Any] {
+        if let baseProperties = configuration["base"] as? [String: Any] {
             for (key, value) in baseProperties {
                 combinedProperties[key] = value
             }
         }
         
         
-        if let devices = properties["devices"] as? [[String: Any]] {
+        if let devices = configuration["devices"] as? [[String: Any]] {
             for device in devices {
+                // Test that the device type matches the image format
                 if let deviceType = device["device-type"] as? String,
                     deviceType == imageFormats.first?.deviceType,
                     let properties = device["properties"] as? [String: Any] {
@@ -264,7 +276,7 @@ class AssetCatalog {
         }
         
         
-        if let customProperties = properties["custom"] as? [[String: Any]] {
+        if let customProperties = configuration["custom"] as? [[String: Any]] {
             for customProperty in customProperties {
                 if let patterns = customProperty["patterns"] as? [String],
                     node.name.isMatchedBy(patterns),
@@ -284,109 +296,3 @@ class AssetCatalog {
     }
     
 }
-
-
-enum ImageFormat {
-    case watch, watch38, watch42
-    
-    var idiom: String? {
-        switch self {
-        case .watch, .watch38, .watch42:
-            return "watch"
-        }
-    }
-    
-    var screenWidth: String? {
-        switch self {
-        case .watch:
-            return nil
-        
-        case .watch38:
-            return "<=145"
-        
-        case .watch42:
-            return ">145"
-        }
-    }
-    
-    var scale: String? {
-        switch self {
-        case .watch, .watch38, .watch42:
-            return "2x"
-        }
-    }
-    
-    var deviceType: String {
-        switch self {
-        case .watch, .watch38, .watch42:
-            return "watch"
-        }
-    }
-    
-//    var properties: [String : Any]? {
-//        switch self {
-//        case .watch:
-//            return nil
-//    
-//        case .watch38, .watch42:
-//            return ["template-rendering-intent" : "template"]
-//        }
-//    }
-
-}
-
-
-extension String {
-
-    func isMatchedBy(_ patterns: [String]) -> Bool {
-        for pattern in patterns {
-            if isMatchedBy(pattern) {
-                return true
-            }
-        }
-        
-        return false
-    }
-    
-    
-    func isMatchedBy(_ pattern: String) -> Bool {
-        if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) {
-            let range = NSRange(location: 0, length: (self as NSString).length)
-            
-            return regex.firstMatch(in: self, options: [], range: range) != nil
-        }
-        
-        return false
-    }
-
-}
-
-
-
-extension URL {
-    
-    func appendingPathComponents(_ pathComponents: [String]) -> URL {
-        var url = self
-        
-        for pathComponent in pathComponents {
-            url = url.appendingPathComponent(pathComponent)
-        }
-        
-        return url
-    }
-
-}
-
-
-// https://github.com/ankurp/Cent/blob/master/Sources/Dictionary.swift
-
-extension Dictionary {
-
-    mutating func merge<K, V>(dict: [K: V]){
-        for (k, v) in dict {
-            self.updateValue(v as! Value, forKey: k as! Key)
-        }
-    }
-    
-}
-
