@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4A07727C1DF9634A0068A929 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A07727B1DF9634A0068A929 /* Extensions.swift */; };
-		4A07727E1DF963C70068A929 /* ImageFormats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A07727D1DF963C70068A929 /* ImageFormats.swift */; };
+		4A07727E1DF963C70068A929 /* ImageProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A07727D1DF963C70068A929 /* ImageProperties.swift */; };
 		4A0772821DF9731B0068A929 /* CommandLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A07727F1DF9731B0068A929 /* CommandLine.swift */; };
 		4A0772831DF9731B0068A929 /* Option.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0772801DF9731B0068A929 /* Option.swift */; };
 		4A0772841DF9731B0068A929 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0772811DF9731B0068A929 /* StringExtensions.swift */; };
@@ -30,11 +30,11 @@
 
 /* Begin PBXFileReference section */
 		4A07727B1DF9634A0068A929 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		4A07727D1DF963C70068A929 /* ImageFormats.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFormats.swift; sourceTree = "<group>"; };
+		4A07727D1DF963C70068A929 /* ImageProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageProperties.swift; sourceTree = "<group>"; };
 		4A07727F1DF9731B0068A929 /* CommandLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommandLine.swift; path = CommandLine/CommandLineKit/CommandLine.swift; sourceTree = "<group>"; };
 		4A0772801DF9731B0068A929 /* Option.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Option.swift; path = CommandLine/CommandLineKit/Option.swift; sourceTree = "<group>"; };
 		4A0772811DF9731B0068A929 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StringExtensions.swift; path = CommandLine/CommandLineKit/StringExtensions.swift; sourceTree = "<group>"; };
-		4A56D1471DE5B573000B40D8 /* XCAssetPacker */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = XCAssetPacker; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A56D1471DE5B573000B40D8 /* xcassetpacker */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xcassetpacker; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A56D14A1DE5B573000B40D8 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4A56D1581DE5BA85000B40D8 /* AssetCatalog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetCatalog.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -62,7 +62,7 @@
 		4A56D1481DE5B573000B40D8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4A56D1471DE5B573000B40D8 /* XCAssetPacker */,
+				4A56D1471DE5B573000B40D8 /* xcassetpacker */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -72,7 +72,7 @@
 			children = (
 				4A56D14A1DE5B573000B40D8 /* main.swift */,
 				4A56D1581DE5BA85000B40D8 /* AssetCatalog.swift */,
-				4A07727D1DF963C70068A929 /* ImageFormats.swift */,
+				4A07727D1DF963C70068A929 /* ImageProperties.swift */,
 				4A07727B1DF9634A0068A929 /* Extensions.swift */,
 			);
 			path = XCAssetPacker;
@@ -92,9 +92,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		4A56D1461DE5B573000B40D8 /* XCAssetPacker */ = {
+		4A56D1461DE5B573000B40D8 /* xcassetpacker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4A56D14E1DE5B573000B40D8 /* Build configuration list for PBXNativeTarget "XCAssetPacker" */;
+			buildConfigurationList = 4A56D14E1DE5B573000B40D8 /* Build configuration list for PBXNativeTarget "xcassetpacker" */;
 			buildPhases = (
 				4A56D1431DE5B573000B40D8 /* Sources */,
 				4A56D1441DE5B573000B40D8 /* Frameworks */,
@@ -104,9 +104,9 @@
 			);
 			dependencies = (
 			);
-			name = XCAssetPacker;
+			name = xcassetpacker;
 			productName = XCAssetPacker;
-			productReference = 4A56D1471DE5B573000B40D8 /* XCAssetPacker */;
+			productReference = 4A56D1471DE5B573000B40D8 /* xcassetpacker */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -138,7 +138,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				4A56D1461DE5B573000B40D8 /* XCAssetPacker */,
+				4A56D1461DE5B573000B40D8 /* xcassetpacker */,
 			);
 		};
 /* End PBXProject section */
@@ -150,7 +150,7 @@
 			files = (
 				4A0772821DF9731B0068A929 /* CommandLine.swift in Sources */,
 				4A07727C1DF9634A0068A929 /* Extensions.swift in Sources */,
-				4A07727E1DF963C70068A929 /* ImageFormats.swift in Sources */,
+				4A07727E1DF963C70068A929 /* ImageProperties.swift in Sources */,
 				4A0772841DF9731B0068A929 /* StringExtensions.swift in Sources */,
 				4A56D1591DE5BA85000B40D8 /* AssetCatalog.swift in Sources */,
 				4A0772831DF9731B0068A929 /* Option.swift in Sources */,
@@ -281,7 +281,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4A56D14E1DE5B573000B40D8 /* Build configuration list for PBXNativeTarget "XCAssetPacker" */ = {
+		4A56D14E1DE5B573000B40D8 /* Build configuration list for PBXNativeTarget "xcassetpacker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4A56D14F1DE5B573000B40D8 /* Debug */,

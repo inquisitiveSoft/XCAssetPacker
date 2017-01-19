@@ -22,12 +22,13 @@ import Foundation
 
 
 let imageSetFileExtension = "imageset"
+let appIconSetFileExtension = "appiconset"
 
 
 class Node {
     let name: String
     var sourceURL: URL?
-    var format: ImageFormat?
+    var properties: ImageProperties?
     let parent: Node?
     var children: [Node] = []
     
@@ -124,6 +125,13 @@ class AssetCatalog {
     func addImageAsset(from sourceURL: URL, inDirectory sourceDirectoryURL: URL) {
         let numberOfPathComponents = sourceDirectoryURL.pathComponents.count
         let fileName = sourceURL.lastPathComponent
+        var isAppIcon = false
+        
+        if let include = configuration["include-images"] as? [String: Any],
+            let patternsToRequire = include["patterns"] as? [String],
+            !fileName.isMatchedBy(patternsToRequire) {
+            return
+        }
         
         if let skip = configuration["skip-images"] as? [String: Any],
             let patternsToSkip = skip["patterns"] as? [String],
@@ -131,8 +139,17 @@ class AssetCatalog {
             return
         }
         
-        let imageProperties = ImageFormat.inferImageProperties(from: fileName, configuration: configuration)
-        let generalizedImageSetName = (imageProperties.name as NSString).appendingPathExtension(imageSetFileExtension)!
+        if let appIcon = configuration["app-icon"] as? [String: Any],
+            let appIconPattern = appIcon["pattern"] as? String {
+            isAppIcon = fileName.isMatchedBy(appIconPattern)
+        } else {
+            isAppIcon = fileName.isMatchedBy("AppIcon")
+        }
+        
+        let imageProperties = ImageProperties(from: fileName, isAppIcon: isAppIcon, configuration: configuration)
+        
+        let groupFileExtension = isAppIcon ? appIconSetFileExtension : imageSetFileExtension
+        let generalizedImageSetName = (imageProperties.name as NSString).appendingPathExtension(groupFileExtension)!
         
         
         var pathComponents = sourceURL.pathComponents.suffix(from: numberOfPathComponents)
@@ -148,7 +165,7 @@ class AssetCatalog {
         }
         
         let imageNode = currentNode.childNode(named: fileName)
-        imageNode.format = imageProperties.format
+        imageNode.properties = imageProperties
         imageNode.sourceURL = sourceURL
     }
     
@@ -156,39 +173,37 @@ class AssetCatalog {
     // MARK: Outputing the .xcasset package
     
     func applyChanges() throws {
-        let start = Date()
-        try applyChanges(forNode: rootNode)
+        let numberOfImages = try applyChanges(forNode: rootNode)
         
         let suffix = destinationURL.pathComponents.suffix(4)
         let lastPathComponents = suffix.reduce("") { (combined, pathComponent) -> String in
             return combined + "/" + pathComponent
         }
         
-        print(String(format: "Created assets package %@ in %.3f seconds", lastPathComponents, -start.timeIntervalSinceNow))
-
+        print("Created assets package \(lastPathComponents) containing \(numberOfImages) images")
     }
     
     
-    func applyChanges(forNode node: Node) throws {
+    func applyChanges(forNode node: Node) throws -> Int {
         // Create a Contents.json for each directory
         var images: [[String : Any]] = []
         var copies: [(from: URL, to: URL)] = []
-        var imageFormats: [ImageFormat] = []
+        var imageProperties: [ImageProperties] = []
         
         for child in node.children where !child.isDirectory {
-            if let sourceURL = child.sourceURL, let format = child.format {
-                imageFormats.append(format)
+            if let sourceURL = child.sourceURL, let properties = child.properties {
+                imageProperties.append(properties)
                 
                 let imageFileName = sourceURL.lastPathComponent
                 let assetDestinationURL = destinationURL.appendingPathComponents(node.pathComponents).appendingPathComponent(imageFileName)
                 
-                images.append(imageDictionary(for: imageFileName, type: format))
+                images.append(imageDictionary(for: imageFileName, properties: properties))
                 copies.append((sourceURL, assetDestinationURL))
             }
         }
         
         
-        var contents = contentsDictionaryFor(node: node, imageFormats: imageFormats)
+        var contents = contentsDictionaryFor(node: node, imageProperties: imageProperties)
 
         if !images.isEmpty {
             contents["images"] = images
@@ -207,9 +222,13 @@ class AssetCatalog {
         }
         
         // Perform recursively for each child directory
+        var numberOfImages = images.count
+        
         for child in node.children where child.isDirectory {
-            try applyChanges(forNode: child)
+            numberOfImages += try applyChanges(forNode: child)
         }
+        
+        return numberOfImages
     }
     
     
@@ -223,28 +242,36 @@ class AssetCatalog {
     
     // MARK: Generate json for each component within the .xcassets package
     
-    func imageDictionary(for imageName: String, type: ImageFormat) -> [String: Any] {
+    func imageDictionary(for imageName: String, properties: ImageProperties) -> [String: Any] {
         var imageDictionary: [String: Any] = [:]
         
         imageDictionary["filename"] = imageName
         
-        if let idiom = type.idiom {
+        if let idiom = properties.idiom {
             imageDictionary["idiom"] = idiom
         }
-
-        if let scale = type.scale {
+        
+        if let scale = properties.scaleString {
             imageDictionary["scale"] = scale
         }
         
-        if let screenWidth = type.screenWidth {
+        if let size = properties.type.sizeString {
+            imageDictionary["size"] = size
+        }
+        
+        if let screenWidth = properties.type.screenWidth {
             imageDictionary["screen-width"] = screenWidth
+        }
+        
+        if let prerendered = properties.prerendered {
+            imageDictionary["pre-rendered"] = prerendered
         }
         
         return imageDictionary
     }
     
     
-    func contentsDictionaryFor(node: Node, imageFormats: [ImageFormat]) -> [String: Any] {
+    func contentsDictionaryFor(node: Node, imageProperties: [ImageProperties]) -> [String: Any] {
         var contents: [String : Any] = (configuration["info"] as? [String: Any]) ?? [
             "info" : [
                 "version" : 1,
@@ -265,7 +292,7 @@ class AssetCatalog {
             for device in devices {
                 // Test that the device type matches the image format
                 if let deviceType = device["device-type"] as? String,
-                    deviceType == imageFormats.first?.deviceType,
+                    deviceType == imageProperties.first?.type.deviceType,
                     let properties = device["properties"] as? [String: Any] {
                     
                     for (key, value) in properties {

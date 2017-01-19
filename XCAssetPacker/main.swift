@@ -23,20 +23,20 @@ import Foundation
 import Foundation
 import Cocoa
 
+
 let assetPackageExtension = "xcassets"
 
-
 // Setup command line input
-let inputPath = StringOption(shortFlag: "i", longFlag: "input", required: true, helpMessage: "Path to the input folder")
+let inputPathOption = StringOption(shortFlag: "i", longFlag: "input", helpMessage: "Path to the input folder")
 let configurationOption = StringOption(shortFlag: "c", longFlag: "config", required: false, helpMessage: "The location of a json configuration file or folder. If none is specified then uses sensible defaults.")
-let outputPathOption = StringOption(shortFlag: "o", longFlag: "output", required: true, helpMessage: "Path to the output file or folder. If a folder is given then an Assets.xcassets package will be created inside it.")
+let outputPathOption = StringOption(shortFlag: "o", longFlag: "output", helpMessage: "Path to the output file or folder. If a folder is given then an Assets.xcassets package will be created inside it.")
 let overwriteOption = BoolOption(shortFlag: "f", longFlag: "force", helpMessage: "Overwrite .xcassets package")
 let helpOption = BoolOption(shortFlag: "h", longFlag: "help", helpMessage: "Prints a help message.")
 let verbosityOption = BoolOption(shortFlag: "v", longFlag: "verbose", helpMessage: "Print verbose messages")
 
-
 let cli = CommandLine()
-cli.addOptions(inputPath, configurationOption, outputPathOption, overwriteOption, helpOption, verbosityOption)
+cli.addOptions(inputPathOption, configurationOption, outputPathOption, overwriteOption, helpOption, verbosityOption)
+
 
 do {
     try cli.parse()
@@ -46,11 +46,24 @@ do {
 }
 
 
+if helpOption.value {
+    cli.printUsage()
+    exit(EX_USAGE)
+}
+
+
+guard inputPathOption.wasSet && outputPathOption.wasSet else {
+    print("Missing required options: [-i or --input, and -o or --output]\n")
+    cli.printUsage()
+    exit(EX_USAGE)
+}
+
+
 // Validate input
 let fileManager = FileManager()
 let sourceDirectoryURL: URL
 
-if let input = inputPath.value {
+if let input = inputPathOption.value {
     sourceDirectoryURL = URL(fileURLWithPath: input)
 } else {
     sourceDirectoryURL = URL(fileURLWithPath: fileManager.currentDirectoryPath)
@@ -95,7 +108,7 @@ if fileManager.fileExists(atPath: destinationURL.path, isDirectory: &isDirectory
 }
 
 
-// Overwrite an existing asset url if --force argument
+// Overwrite an existing .xcasset package if the --force argument is supplied
 if overwriteOption.value {
     try? fileManager.removeItem(at: destinationURL)
 } else {
@@ -127,7 +140,7 @@ while let file = fileEnumerator.nextObject() {
 do {
     try catalog.applyChanges()
 } catch {
-    print("Can't apply changes: \(error)")
+    print("Failed to apply changes: \(error)")
     exit(EX_IOERR)
 }
 

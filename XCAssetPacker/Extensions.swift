@@ -36,12 +36,15 @@ extension String {
     
     func isMatchedBy(_ pattern: String) -> Bool {
         if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) {
-            let range = NSRange(location: 0, length: (self as NSString).length)
-            
-            return regex.firstMatch(in: self, options: [], range: range) != nil
+            return regex.firstMatch(in: self, options: [], range: self.asNSRange) != nil
         }
         
         return false
+    }
+    
+    
+    var asNSRange: NSRange {
+        return NSRange(location: 0, length: (self as NSString).length)
     }
 
 }
@@ -83,7 +86,7 @@ extension URL {
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
+//
 // https://github.com/ankurp/Cent/blob/master/Sources/Dictionary.swift
 
 extension Dictionary {
