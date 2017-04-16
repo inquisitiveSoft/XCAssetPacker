@@ -57,10 +57,11 @@ struct ImageProperties {
         }
         
         if isAppIcon {
-            if let appIcon = configuration["app-icon"] as? [String: Any],
-                let prerendered = appIcon["pre-rendered"] as? Bool {
+            if let appIcon = configuration.value(for: .appIcon) as? [String: Any],
+                let prerendered = appIcon.value(for: .prerendered) as? Bool {
                 self.prerendered = prerendered
             } else {
+                // Default to prerendered
                 self.prerendered = true
             }
         } else {
@@ -100,7 +101,8 @@ struct ImageProperties {
             if let scaleString = scale.scaleString {
                 // See if the scale is identifiable from the filename
                 return scaleString
-            } else if let base = configuration["base"] as? [String: Any], let scaleString = base["scale"] as? String {
+            } else if let base = configuration.value(for: .base) as? [String: Any],
+                let scaleString = base.value(for: .scale) as? String {
                 // Look for a base scale in the configuration file
                 return scaleString
             } else {
@@ -116,12 +118,12 @@ struct ImageProperties {
             return idiom
         }
         
-        if let base = configuration["base"] as? [String: Any],
-            let idiomString = base["idiom"] as? String {
+        if let base = configuration.value(for: .base) as? [String: Any],
+            let idiomString = base.value(for: .idiom) as? String {
             return idiomString
         }
         
-        return "universal"
+        return Configuration.universal.rawValue
     }
     
 }

@@ -21,10 +21,6 @@
 import Foundation
 
 
-let imageSetFileExtension = "imageset"
-let appIconSetFileExtension = "appiconset"
-
-
 class Node {
     let name: String
     var sourceURL: URL?
@@ -105,7 +101,6 @@ class AssetCatalog {
     let rootNode: Node
     
     let numberOfRootPathComponents: Int
-    let contentsFileName = "Contents.json"
     let configuration: [String: Any]
     
     let fileManager = FileManager()
@@ -127,29 +122,29 @@ class AssetCatalog {
         let fileName = sourceURL.lastPathComponent
         var isAppIcon = false
         
-        if let include = configuration["include-images"] as? [String: Any],
-            let patternsToRequire = include["patterns"] as? [String],
+        if let include = configuration.value(for: .includeImages) as? [String: Any],
+            let patternsToRequire = include.value(for: .pattern) as? [String],
             !fileName.isMatchedBy(patternsToRequire) {
             return
         }
         
-        if let skip = configuration["skip-images"] as? [String: Any],
-            let patternsToSkip = skip["patterns"] as? [String],
+        if let skip = configuration.value(for: .skipImages) as? [String: Any],
+            let patternsToSkip = skip.value(for: .pattern) as? [String],
             fileName.isMatchedBy(patternsToSkip) {
             return
         }
         
-        if let appIcon = configuration["app-icon"] as? [String: Any],
-            let appIconPattern = appIcon["pattern"] as? String {
+        if let appIcon = configuration.value(for: .appIcon) as? [String: Any],
+            let appIconPattern = appIcon.value(for: .pattern) as? String {
             isAppIcon = fileName.isMatchedBy(appIconPattern)
         } else {
-            isAppIcon = fileName.isMatchedBy("AppIcon")
+            isAppIcon = fileName.isMatchedBy(FileName.appIcon.rawValue)
         }
         
         let imageProperties = ImageProperties(from: fileName, isAppIcon: isAppIcon, configuration: configuration)
         
-        let groupFileExtension = isAppIcon ? appIconSetFileExtension : imageSetFileExtension
-        let generalizedImageSetName = (imageProperties.name as NSString).appendingPathExtension(groupFileExtension)!
+        let groupFileExtension: FileExtension = isAppIcon ? .appIconSet : .imageSet
+        let generalizedImageSetName = (imageProperties.name as NSString).appendingPathExtension(groupFileExtension.rawValue)!
         
         
         var pathComponents = sourceURL.pathComponents.suffix(from: numberOfPathComponents)
@@ -195,7 +190,7 @@ class AssetCatalog {
                 imageProperties.append(properties)
                 
                 let imageFileName = sourceURL.lastPathComponent
-                let assetDestinationURL = destinationURL.appendingPathComponents(node.pathComponents).appendingPathComponent(imageFileName)
+                let assetDestinationURL = destinationURL.appending(pathComponents: node.pathComponents).appendingPathComponent(imageFileName)
                 
                 images.append(imageDictionary(for: imageFileName, properties: properties))
                 copies.append((sourceURL, assetDestinationURL))
@@ -206,22 +201,22 @@ class AssetCatalog {
         var contents = contentsDictionaryFor(node: node, imageProperties: imageProperties)
 
         if !images.isEmpty {
-            contents["images"] = images
+            contents[Configuration.images.rawValue] = images
         }
         
         // Create the destination folder
-        let folderURL = destinationURL.appendingPathComponents(node.pathComponents)
+        let folderURL = destinationURL.appending(pathComponents: node.pathComponents)
         try fileManager.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: nil)
         
         // Save the Contents.json
-        try write(contents, to: folderURL, fileName: contentsFileName)
+        try write(contents, to: folderURL, fileName: FileName.contents.rawValue)
         
-        // Apply copies
+        // Perform copies
         for (sourceURL, destinationURL) in copies {
             try fileManager.copyItem(at: sourceURL, to: destinationURL)
         }
         
-        // Perform recursively for each child directory
+        // Apply recursively for each child directory
         var numberOfImages = images.count
         
         for child in node.children where child.isDirectory {
@@ -245,26 +240,26 @@ class AssetCatalog {
     func imageDictionary(for imageName: String, properties: ImageProperties) -> [String: Any] {
         var imageDictionary: [String: Any] = [:]
         
-        imageDictionary["filename"] = imageName
+        imageDictionary[Configuration.filename.rawValue] = imageName
         
         if let idiom = properties.idiom {
-            imageDictionary["idiom"] = idiom
+            imageDictionary[Configuration.idiom.rawValue] = idiom
         }
         
         if let scale = properties.scaleString {
-            imageDictionary["scale"] = scale
+            imageDictionary[Configuration.scale.rawValue] = scale
         }
         
         if let size = properties.type.sizeString {
-            imageDictionary["size"] = size
+            imageDictionary[Configuration.size.rawValue] = size
         }
         
         if let screenWidth = properties.type.screenWidth {
-            imageDictionary["screen-width"] = screenWidth
+            imageDictionary[Configuration.screenWidth.rawValue] = screenWidth
         }
         
         if let prerendered = properties.prerendered {
-            imageDictionary["pre-rendered"] = prerendered
+            imageDictionary[Configuration.prerendered.rawValue] = prerendered
         }
         
         return imageDictionary
@@ -272,7 +267,7 @@ class AssetCatalog {
     
     
     func contentsDictionaryFor(node: Node, imageProperties: [ImageProperties]) -> [String: Any] {
-        var contents: [String : Any] = (configuration["info"] as? [String: Any]) ?? [
+        var contents = (configuration.value(for: .info) as? [String: Any]) ?? [
             "info" : [
                 "version" : 1,
                 "author" : "xcode"
@@ -281,19 +276,19 @@ class AssetCatalog {
         
         var combinedProperties: [String: Any] = [:]
         
-        if let baseProperties = configuration["base"] as? [String: Any] {
+        if let baseProperties = configuration.value(for: .base) as? [String: Any] {
             for (key, value) in baseProperties {
                 combinedProperties[key] = value
             }
         }
         
         
-        if let devices = configuration["devices"] as? [[String: Any]] {
+        if let devices = configuration.value(for: .devices) as? [[String: Any]] {
             for device in devices {
                 // Test that the device type matches the image format
-                if let deviceType = device["device-type"] as? String,
+                if let deviceType = device.value(for: .deviceType) as? String,
                     deviceType == imageProperties.first?.type.deviceType,
-                    let properties = device["properties"] as? [String: Any] {
+                    let properties = device.value(for: .properties) as? [String: Any] {
                     
                     for (key, value) in properties {
                         combinedProperties[key] = value
@@ -303,11 +298,12 @@ class AssetCatalog {
         }
         
         
-        if let customProperties = configuration["custom"] as? [[String: Any]] {
+        if let customProperties = configuration.value(for: .custom) as? [[String: Any]] {
             for customProperty in customProperties {
-                if let patterns = customProperty["patterns"] as? [String],
+                if let patterns = customProperty.value(for: .pattern) as? [String],
                     node.name.isMatchedBy(patterns),
-                    let properties = customProperty["properties"] as? [String: Any] {
+                    let properties = customProperty.value(for: .properties) as? [String: Any] {
+                    
                     for (key, value) in properties {
                         combinedProperties[key] = value
                     }
@@ -316,7 +312,7 @@ class AssetCatalog {
         }
         
         if !combinedProperties.isEmpty {
-            contents["properties"] = combinedProperties
+            contents[Configuration.properties.rawValue] = combinedProperties
         }
         
         return contents

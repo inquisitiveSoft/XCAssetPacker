@@ -26,13 +26,15 @@ import Cocoa
 
 let assetPackageExtension = "xcassets"
 
-// Setup command line input
+
+// Setup command line options
 let inputPathOption = StringOption(shortFlag: "i", longFlag: "input", helpMessage: "Path to the input folder")
 let configurationOption = StringOption(shortFlag: "c", longFlag: "config", required: false, helpMessage: "The location of a json configuration file or folder. If none is specified then uses sensible defaults.")
 let outputPathOption = StringOption(shortFlag: "o", longFlag: "output", helpMessage: "Path to the output file or folder. If a folder is given then an Assets.xcassets package will be created inside it.")
 let overwriteOption = BoolOption(shortFlag: "f", longFlag: "force", helpMessage: "Overwrite .xcassets package")
 let helpOption = BoolOption(shortFlag: "h", longFlag: "help", helpMessage: "Prints a help message.")
 let verbosityOption = BoolOption(shortFlag: "v", longFlag: "verbose", helpMessage: "Print verbose messages")
+
 
 let cli = CommandLine()
 cli.addOptions(inputPathOption, configurationOption, outputPathOption, overwriteOption, helpOption, verbosityOption)
@@ -146,4 +148,3 @@ do {
 
 
 exit(EXIT_SUCCESS)
-

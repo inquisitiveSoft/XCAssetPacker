@@ -14,6 +14,7 @@
 		4A0772841DF9731B0068A929 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0772811DF9731B0068A929 /* StringExtensions.swift */; };
 		4A56D14B1DE5B573000B40D8 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A56D14A1DE5B573000B40D8 /* main.swift */; };
 		4A56D1591DE5BA85000B40D8 /* AssetCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A56D1581DE5BA85000B40D8 /* AssetCatalog.swift */; };
+		4A5F178F1EA3EDE8007C37DE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5F178E1EA3EDE8007C37DE /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +38,7 @@
 		4A56D1471DE5B573000B40D8 /* xcassetpacker */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xcassetpacker; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A56D14A1DE5B573000B40D8 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		4A56D1581DE5BA85000B40D8 /* AssetCatalog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetCatalog.swift; sourceTree = "<group>"; };
+		4A5F178E1EA3EDE8007C37DE /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				4A56D14A1DE5B573000B40D8 /* main.swift */,
+				4A5F178E1EA3EDE8007C37DE /* Constants.swift */,
 				4A56D1581DE5BA85000B40D8 /* AssetCatalog.swift */,
 				4A07727D1DF963C70068A929 /* ImageProperties.swift */,
 				4A07727B1DF9634A0068A929 /* Extensions.swift */,
@@ -116,7 +119,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0810;
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = "Inquisitive Software";
 				TargetAttributes = {
 					4A56D1461DE5B573000B40D8 = {
@@ -149,6 +152,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A0772821DF9731B0068A929 /* CommandLine.swift in Sources */,
+				4A5F178F1EA3EDE8007C37DE /* Constants.swift in Sources */,
 				4A07727C1DF9634A0068A929 /* Extensions.swift in Sources */,
 				4A07727E1DF963C70068A929 /* ImageProperties.swift in Sources */,
 				4A0772841DF9731B0068A929 /* StringExtensions.swift in Sources */,
@@ -179,6 +183,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -228,6 +233,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -248,6 +254,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
 		};

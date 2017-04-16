@@ -36,7 +36,7 @@ extension String {
     
     func isMatchedBy(_ pattern: String) -> Bool {
         if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) {
-            return regex.firstMatch(in: self, options: [], range: self.asNSRange) != nil
+            return regex.numberOfMatches(in: self, options: [], range: self.asNSRange) > 0
         }
         
         return false
@@ -52,7 +52,7 @@ extension String {
 
 extension URL {
     
-    func appendingPathComponents(_ pathComponents: [String]) -> URL {
+    func appending(pathComponents: [String]) -> URL {
         var url = self
         
         for pathComponent in pathComponents {
@@ -89,9 +89,10 @@ extension URL {
 //
 // https://github.com/ankurp/Cent/blob/master/Sources/Dictionary.swift
 
+
 extension Dictionary {
 
-    mutating func merge<K, V>(dict: [K: V]){
+    mutating func merge<K, V>(dict: [K: V]) {
         for (k, v) in dict {
             self.updateValue(v as! Value, forKey: k as! Key)
         }
