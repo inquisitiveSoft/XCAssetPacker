@@ -24,6 +24,7 @@ import Foundation
 enum Configuration: String {
     case appIcon = "app-icon"
     case pattern = "pattern"
+    case multiplePatterns = "patterns"
     case includeImages = "include-images"
     case skipImages = "skip-images"
     case images = "images"
@@ -40,6 +41,7 @@ enum Configuration: String {
     case properties = "properties"
     case custom = "custom"
     case universal = "universal"
+    case validImageExtensions = "valid-image-extensions"
 }
 
 
@@ -47,6 +49,8 @@ enum FileExtension: String {
     case imageSet = "imageset"
     case appIconSet = "appiconset"
     case json = "json"
+    case assetPackage = "xcassets"
+    case swift = "swift"
 }
 
 

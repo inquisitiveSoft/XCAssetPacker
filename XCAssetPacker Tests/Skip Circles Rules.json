@@ -1,0 +1,24 @@
+{
+	"base" : {
+		"template-rendering-intent" : "template"
+	},
+	"devices" : [
+		{
+			"device-type" : "watch",
+			"properties" : {
+				"template-rendering-intent" : "template"
+			}
+		}
+	],
+	"custom" : [
+		{
+			"patterns" : [".*Preview.*", "SleepDuration.*", "WakeTime.*"],
+			"properties" : {
+				"template-rendering-intent" : "original"
+			}
+		}
+	],
+    "skip-images" : {
+		"patterns" : [".*Circle"]
+	}
+}

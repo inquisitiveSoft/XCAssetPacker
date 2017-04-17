@@ -24,20 +24,25 @@ import Foundation
 import Cocoa
 
 
-let assetPackageExtension = "xcassets"
-
-
 // Setup command line options
 let inputPathOption = StringOption(shortFlag: "i", longFlag: "input", helpMessage: "Path to the input folder")
 let configurationOption = StringOption(shortFlag: "c", longFlag: "config", required: false, helpMessage: "The location of a json configuration file or folder. If none is specified then uses sensible defaults.")
 let outputPathOption = StringOption(shortFlag: "o", longFlag: "output", helpMessage: "Path to the output file or folder. If a folder is given then an Assets.xcassets package will be created inside it.")
+let swiftDestinationOption = StringOption(longFlag: "swift", helpMessage: "Path to the output swift file or folder. If a folder is given then an Images.swift package will be created inside it.")
 let overwriteOption = BoolOption(shortFlag: "f", longFlag: "force", helpMessage: "Overwrite .xcassets package")
+
+// Target
+let swiftTargetMacOption = BoolOption(longFlag: "mac", helpMessage: "Set target swift")
+let swiftTargetiOSOption = BoolOption(longFlag: "iOS", helpMessage: "Set target Swift")
+let swiftTargetWatchOption = BoolOption(longFlag: "watch", helpMessage: "Set target swift")
+
+
 let helpOption = BoolOption(shortFlag: "h", longFlag: "help", helpMessage: "Prints a help message.")
 let verbosityOption = BoolOption(shortFlag: "v", longFlag: "verbose", helpMessage: "Print verbose messages")
 
 
 let cli = CommandLine()
-cli.addOptions(inputPathOption, configurationOption, outputPathOption, overwriteOption, helpOption, verbosityOption)
+cli.addOptions(inputPathOption, configurationOption, outputPathOption, swiftDestinationOption, overwriteOption, helpOption, verbosityOption)
 
 
 do {
@@ -61,19 +66,49 @@ guard inputPathOption.wasSet && outputPathOption.wasSet else {
 }
 
 
-// Validate input
+let inputPath = inputPathOption.value
+let outputPath = outputPathOption.value
+let shouldOverwrite: Bool = overwriteOption.value
+
+
+// Determine input URL
 let fileManager = FileManager()
 let sourceDirectoryURL: URL
 
-if let input = inputPathOption.value {
+if let input = inputPath {
     sourceDirectoryURL = URL(fileURLWithPath: input)
 } else {
     sourceDirectoryURL = URL(fileURLWithPath: fileManager.currentDirectoryPath)
 }
 
-guard let fileEnumerator = fileManager.enumerator(at: sourceDirectoryURL, includingPropertiesForKeys: [.isRegularFileKey], options: [], errorHandler: nil) else {
-    print("Can't create file enumerator for \(sourceDirectoryURL)")
-    exit(EX_IOERR)
+
+// Determine output URL
+var destinationDirectoryURL: URL
+
+if let output = outputPath {
+    destinationDirectoryURL = URL(fileURLWithPath: output).absoluteURL
+} else {
+    destinationDirectoryURL = URL(fileURLWithPath: fileManager.currentDirectoryPath)
+}
+
+
+// Validate swift url
+var swiftDestinationURL: URL?
+
+if let swiftDestinationPath = swiftDestinationOption.value {
+    swiftDestinationURL = URL(fileURLWithPath: swiftDestinationPath).absoluteURL
+} else if swiftDestinationOption.wasSet {
+    swiftDestinationURL = URL(fileURLWithPath: fileManager.currentDirectoryPath)
+}
+
+let swiftTarget: SwiftTarget
+
+if swiftTargetMacOption.wasSet {
+    swiftTarget = .cocoa
+} else if swiftTargetWatchOption.wasSet {
+    swiftTarget = .watch
+} else {
+    swiftTarget = .iOS
 }
 
 
@@ -91,60 +126,29 @@ if let configurationFilePath = configurationOption.value {
 }
 
 
-// Validate output
-var destinationURL: URL
-
-if let output = outputPathOption.value {
-    destinationURL = URL(fileURLWithPath: output).absoluteURL
-} else {
-    destinationURL = URL(fileURLWithPath: fileManager.currentDirectoryPath)
-}
-
-
-var isDirectory: ObjCBool = false
-
-if fileManager.fileExists(atPath: destinationURL.path, isDirectory: &isDirectory),
-    isDirectory.boolValue,
-    destinationURL.pathExtension != assetPackageExtension {
-    destinationURL = destinationURL.appendingPathComponent("Assets.\(assetPackageExtension)")
-}
-
-
-// Overwrite an existing .xcasset package if the --force argument is supplied
-if overwriteOption.value {
-    try? fileManager.removeItem(at: destinationURL)
-} else {
-    let fileExists = fileManager.fileExists(atPath: destinationURL.path)
+do {
+    // Build a catalog of available images
+    let assetCatalog = try AssetCatalogGenerator(from: sourceDirectoryURL, to: destinationDirectoryURL, swift: swiftDestinationURL, target: swiftTarget, overwrite: shouldOverwrite, configuration: configuration)
     
-    if fileExists {
-        print("An asset collection already exists at: \(destinationURL)")
+    // Generate the output packages and files
+    let log = try assetCatalog.applyChanges()
+    
+    // Print
+    let suffix = assetCatalog.destinationURL.pathComponents.suffix(4)
+    let lastPathComponents = suffix.reduce("") { (combined, pathComponent) -> String in
+        return combined + "/" + pathComponent
+    }
+    
+    print("Created assets package \(lastPathComponents) containing \(log.numberOfImages) images")
+    exit(EXIT_SUCCESS)
+} catch let error as AssetCatalogError {
+    // Report errors to the cli
+    switch error {
+    case .ioError(let description):
+        print(description)
         exit(EX_IOERR)
     }
-}
-
-
-// Enumarate images
-let validImageExtensions = ["png"]
-let catalog = AssetCatalog(at: destinationURL, configuration: configuration)
-
-while let file = fileEnumerator.nextObject() {
-    if let fileURL = file as? URL, let resourceValues = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]) {
-        if validImageExtensions.contains(fileURL.pathExtension.lowercased()), let isRegularFile = resourceValues.isRegularFile, isRegularFile {
-            catalog.addImageAsset(from: fileURL, inDirectory: sourceDirectoryURL)
-        } else if fileURL.pathExtension == assetPackageExtension {
-            // Don't search within existing .xcasset packages
-            fileEnumerator.skipDescendants()
-        }
-    }
-}
-
-
-do {
-    try catalog.applyChanges()
 } catch {
-    print("Failed to apply changes: \(error)")
+    print("Unexpected error")
     exit(EX_IOERR)
 }
-
-
-exit(EXIT_SUCCESS)

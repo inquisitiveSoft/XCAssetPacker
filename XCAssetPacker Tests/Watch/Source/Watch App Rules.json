@@ -1,0 +1,8 @@
+{
+	"skip-images" : {
+		"patterns" : ["Watch App .*", "Bed.*"]
+	},
+	"base" : {
+		"template-rendering-intent" : "original"
+	}
+}
