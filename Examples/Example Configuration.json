@@ -1,0 +1,34 @@
+{
+	"skip-images" : {
+		"patterns" : ["Watch App .*", "Bed.*"]
+	},
+	
+	"valid-image-extensions" : ["png", "jpeg", "jpg", "tiff"],
+	
+	"base" : {
+		"template-rendering-intent" : "template"
+	},
+	
+	"devices" : [
+		{
+			"device-type" : "watch",
+			"properties" : {
+				"template-rendering-intent" : "template"
+			}
+		}
+	],
+	
+	"app-icon" : {
+		"pattern" : "Custom App Icon Name.*",
+		"prerendered" : false
+	},
+
+	"custom" : [
+		{
+			"patterns" : [".*Preview.*", "SleepDuration.*", "WakeTime.*"],
+			"properties" : {
+				"template-rendering-intent" : "original"
+			}
+		}
+	]
+}
