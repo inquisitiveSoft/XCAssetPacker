@@ -1,0 +1,42 @@
+{
+	/* Skip images */
+	"skip-images" : {
+		"patterns" : ["Watch App .*", "Bed.*"]
+	},
+	
+	
+	/* Set which images to include. Defaults to ["png"] */
+	"valid-image-extensions" : ["png", "jpeg", "jpg", "tiff"],
+	
+	// Set the base rendering options
+	"base" : {
+		"template-rendering-intent" : "template"
+	},
+	
+	/* Apply properties based on the target device */
+	"devices" : [
+		{
+			"device-type" : "watch",
+			"properties" : {
+				"template-rendering-intent" : "template"
+			}
+		}
+	],
+	
+	/* By default images following the AppIcon-{size}.png naming convention
+	   will be treated as prerendered app icons and won't be exposed to Swift */
+	"app-icon" : {
+		"pattern" : "Custom App Icon Name.*",
+		"prerendered" : false		/* Defaults to true */
+	},
+
+	/* Apply custom sets of properties to images matched by the given patterns */
+	"custom" : [
+		{
+			"patterns" : [".*Preview.*", "SleepDuration.*", "WakeTime.*"],
+			"properties" : {
+				"template-rendering-intent" : "original"
+			}
+		}
+	]
+}

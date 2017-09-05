@@ -26,9 +26,9 @@ import Cocoa
 
 // Setup command line options
 let inputPathOption = StringOption(shortFlag: "i", longFlag: "input", helpMessage: "Path to the input folder.")
-let configurationOption = StringOption(shortFlag: "c", longFlag: "config", required: false, helpMessage: "The location of a json configuration file. If none is specified then uses sensible defaults.")
-let outputPathOption = StringOption(shortFlag: "o", longFlag: "output", helpMessage: "Path to the output file or folder. If a folder is given then an Assets.xcassets package will be created inside it.")
-let swiftDestinationOption = StringOption(longFlag: "swift", helpMessage: "Path to the output swift file or folder. If a folder is given then an Images.swift package will be created inside it.")
+let configurationOption = StringOption(shortFlag: "c", longFlag: "config", required: false, helpMessage: "The location of a json configuration file.\n      If none is specified then uses sensible defaults.")
+let outputPathOption = StringOption(shortFlag: "o", longFlag: "output", helpMessage: "Path to the output file or folder.\n      If a folder is given then an Assets.xcassets package will be created inside it.")
+let swiftDestinationOption = StringOption(longFlag: "swift", helpMessage: "Path to the output swift file or folder.\n      If a folder is given then an Images.swift file will be created inside it.")
 let overwriteOption = BoolOption(shortFlag: "f", longFlag: "force", helpMessage: "Overwrite any existing .xcassets package or Swift file.")
 
 // Target
@@ -146,7 +146,7 @@ do {
         print(description)
         exit(EX_IOERR)
     }
-} catch {
-    print("Unexpected error")
+} catch let error {
+    print("Unexpected error: \(String(describing: error))")
     exit(EX_IOERR)
 }

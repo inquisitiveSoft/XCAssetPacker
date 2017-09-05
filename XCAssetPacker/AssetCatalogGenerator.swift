@@ -97,6 +97,7 @@ class Node {
         return sourceURL == nil
     }
     
+    
     var pathComponents: [String] {
         var currentNode: Node? = self
         var pathComponents: [String] = []
@@ -109,19 +110,6 @@ class Node {
         return pathComponents.reversed()
     }
     
-    
-//    var folderPathComponents: [String] {
-//        var currentNode: Node? = self.parent
-//        var pathComponents: [String] = []
-//        
-//        while let node = currentNode, node.parent != nil {
-//            pathComponents.append(node.name)
-//            currentNode = node.parent
-//        }
-//        
-//        return pathComponents
-//    }
-
     
     func printTree(depth: Int = 0) {
         let depthPadding = (0...depth).reduce("") { (existing, _) -> String in
@@ -144,6 +132,7 @@ class AssetCatalogGenerator {
     let swiftFileURL: URL?
     let swiftTarget: SwiftTarget
     let shouldOverwrite: Bool
+    let baseIdiom: DeviceIdiom?
     let rootNode: Node
     
     let numberOfRootPathComponents: Int
@@ -162,6 +151,13 @@ class AssetCatalogGenerator {
         
         self.shouldOverwrite = shouldOverwrite
         self.configuration = configuration
+        
+        if let base = configuration.value(for: .base) as? [String: Any],
+            let idiom = base.value(for: .idiom) as? String {
+            baseIdiom = DeviceIdiom(idiom)
+        } else {
+            baseIdiom = nil
+        }
     }
     
     
@@ -272,7 +268,26 @@ class AssetCatalogGenerator {
                 let imageFileName = sourceURL.lastPathComponent
                 let assetDestinationURL = destinationURL.appending(pathComponents: node.pathComponents).appendingPathComponent(imageFileName)
                 
-                images.append(imageDictionary(for: imageFileName, properties: properties))
+                // Xcode 9 seperates Notification, Settings and Spotlight images for iPhone and iPad
+                // if no base idiom is supplied then add both images
+                //
+                // This is rather messy, so would ideally be tidied up
+                switch properties.type {
+                case .notification, .settings, .spotlight:
+                    if let idiom = baseIdiom {
+                        images.append(imageDictionary(for: imageFileName, properties: properties, customIdiom: idiom.idiomString))
+                    } else {
+                        let targetIdioms: [DeviceIdiom] = [.iPhone, .iPad]
+                        
+                        for targetIdiom in targetIdioms {
+                            images.append(imageDictionary(for: imageFileName, properties: properties, customIdiom: targetIdiom.idiomString))
+                        }
+                    }
+                
+                default:
+                    images.append(imageDictionary(for: imageFileName, properties: properties))
+                }
+                
                 copies.append((sourceURL, assetDestinationURL))
             }
         }
@@ -320,12 +335,14 @@ class AssetCatalogGenerator {
     
     // MARK: Generate json for each component within the .xcassets package
     
-    func imageDictionary(for imageName: String, properties: ImageProperties) -> [String: Any] {
+    
+    func imageDictionary(for imageName: String, properties: ImageProperties, customIdiom: String? = nil) -> [String: Any] {
         var imageDictionary: [String: Any] = [:]
-        
         imageDictionary[Configuration.filename.rawValue] = imageName
         
-        if let idiom = properties.idiom {
+        if let idiom = customIdiom {
+            imageDictionary[Configuration.idiom.rawValue] = idiom
+        } else if let idiom = properties.idiom {
             imageDictionary[Configuration.idiom.rawValue] = idiom
         }
         

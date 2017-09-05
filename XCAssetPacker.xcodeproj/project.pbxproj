@@ -30,6 +30,8 @@
 		4AD71E911EA4D13400016A1A /* AssetCatalogGenerator+Creation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD71E8F1EA4D13400016A1A /* AssetCatalogGenerator+Creation.swift */; };
 		4AD71E951EA4DD2700016A1A /* Complication Rules.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD71E941EA4DD2700016A1A /* Complication Rules.json */; };
 		4AD71E971EA4EEEC00016A1A /* Skip Circles Rules.json in Resources */ = {isa = PBXBuildFile; fileRef = 4AD71E961EA4EEEC00016A1A /* Skip Circles Rules.json */; };
+		4AFFC5911F5D8E35000FDCFD /* DeviceIdiom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFFC5901F5D8E35000FDCFD /* DeviceIdiom.swift */; };
+		4AFFC5931F5D8E83000FDCFD /* DeviceIdiom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFFC5921F5D8E83000FDCFD /* DeviceIdiom.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -62,6 +64,8 @@
 		4AD71E8F1EA4D13400016A1A /* AssetCatalogGenerator+Creation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AssetCatalogGenerator+Creation.swift"; sourceTree = "<group>"; };
 		4AD71E941EA4DD2700016A1A /* Complication Rules.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "Complication Rules.json"; sourceTree = "<group>"; };
 		4AD71E961EA4EEEC00016A1A /* Skip Circles Rules.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "Skip Circles Rules.json"; sourceTree = "<group>"; };
+		4AFFC5901F5D8E35000FDCFD /* DeviceIdiom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceIdiom.swift; sourceTree = "<group>"; };
+		4AFFC5921F5D8E83000FDCFD /* DeviceIdiom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DeviceIdiom.swift; path = XCAssetPacker/DeviceIdiom.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,9 +89,9 @@
 		4A56D13E1DE5B573000B40D8 = {
 			isa = PBXGroup;
 			children = (
+				4AFFC5921F5D8E83000FDCFD /* DeviceIdiom.swift */,
 				4A56D1491DE5B573000B40D8 /* XCAssetPacker */,
 				4A56D1571DE5B5AB000B40D8 /* CommandLine */,
-				4AD71E771EA4CC7300016A1A /* Tests */,
 				4AD71E7D1EA4CCBA00016A1A /* XCAssetPacker Tests */,
 				4A56D1481DE5B573000B40D8 /* Products */,
 			);
@@ -110,6 +114,7 @@
 				4AD71E8F1EA4D13400016A1A /* AssetCatalogGenerator+Creation.swift */,
 				4A56D1581DE5BA85000B40D8 /* AssetCatalogGenerator.swift */,
 				4A07727D1DF963C70068A929 /* ImageProperties.swift */,
+				4AFFC5901F5D8E35000FDCFD /* DeviceIdiom.swift */,
 				4A07727B1DF9634A0068A929 /* Extensions.swift */,
 				4AD71E731EA4899500016A1A /* SwiftGeneration.swift */,
 			);
@@ -124,14 +129,6 @@
 				4A0772811DF9731B0068A929 /* StringExtensions.swift */,
 			);
 			name = CommandLine;
-			path = XCAssetPacker;
-			sourceTree = "<group>";
-		};
-		4AD71E771EA4CC7300016A1A /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Tests;
 			path = XCAssetPacker;
 			sourceTree = "<group>";
 		};
@@ -243,6 +240,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A0772821DF9731B0068A929 /* CommandLine.swift in Sources */,
+				4AFFC5911F5D8E35000FDCFD /* DeviceIdiom.swift in Sources */,
 				4A5F178F1EA3EDE8007C37DE /* Constants.swift in Sources */,
 				4A07727C1DF9634A0068A929 /* Extensions.swift in Sources */,
 				4A07727E1DF963C70068A929 /* ImageProperties.swift in Sources */,
@@ -266,6 +264,7 @@
 				4AD71E871EA4CD0800016A1A /* Extensions.swift in Sources */,
 				4AD71E881EA4CD0800016A1A /* SwiftGeneration.swift in Sources */,
 				4AD71E8A1EA4CD0800016A1A /* CommandLine.swift in Sources */,
+				4AFFC5931F5D8E83000FDCFD /* DeviceIdiom.swift in Sources */,
 				4AD71E8B1EA4CD0800016A1A /* Option.swift in Sources */,
 				4AD71E8C1EA4CD0800016A1A /* StringExtensions.swift in Sources */,
 				4AD71E911EA4D13400016A1A /* AssetCatalogGenerator+Creation.swift in Sources */,
@@ -445,6 +444,7 @@
 				4AD71E831EA4CCBA00016A1A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

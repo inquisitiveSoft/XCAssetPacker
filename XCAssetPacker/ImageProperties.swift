@@ -119,8 +119,9 @@ struct ImageProperties {
         }
         
         if let base = configuration.value(for: .base) as? [String: Any],
-            let idiomString = base.value(for: .idiom) as? String {
-            return idiomString
+            let idiomString = base.value(for: .idiom) as? String,
+            let deviceIdiom = DeviceIdiom(idiomString) {
+            return deviceIdiom.idiomString
         }
         
         return Configuration.universal.rawValue
@@ -139,19 +140,23 @@ enum ImageType {
 
     
     var idiom: String? {
+        let idiom: DeviceIdiom?
+        
         switch self {
         case .watch, .watch38, .watch42:
-            return "watch"
+            idiom = .watch
         
         case .iPhoneAppIcon:
-            return "iphone"
+            idiom = .iPhone
         
         case .iPadAppIcon, .iPadProAppIcon:
-            return "ipad"
+            idiom = .iPad
         
         default:
-            return nil
+            idiom = nil
         }
+        
+        return idiom?.idiomString
     }
     
     
@@ -176,13 +181,13 @@ enum ImageType {
         // Used for matching with the configuration file
         switch self {
         case .watch, .watch38, .watch42:
-            return "watch"
+            return DeviceIdiom.watch.configurationKey
         
         case .iPhoneAppIcon:
-            return "iPhone"
+            return DeviceIdiom.iPhone.configurationKey
         
         case .iPadAppIcon, .iPadProAppIcon:
-            return "iPad"
+            return DeviceIdiom.iPad.configurationKey
         
         default:
             return "universal"
