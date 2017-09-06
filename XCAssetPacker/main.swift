@@ -24,6 +24,8 @@ import Foundation
 import Cocoa
 
 
+let versionNumber = "1.11"
+
 // Setup command line options
 let inputPathOption = StringOption(shortFlag: "i", longFlag: "input", helpMessage: "Path to the input folder.")
 let configurationOption = StringOption(shortFlag: "c", longFlag: "config", required: false, helpMessage: "The location of a json configuration file.\n      If none is specified then uses sensible defaults.")
@@ -36,11 +38,12 @@ let swiftTargetMacOption = BoolOption(longFlag: "mac", helpMessage: "Set the tar
 let swiftTargetiOSOption = BoolOption(longFlag: "iOS", helpMessage: "Set the target for generated Swift to use UIKit.")
 let swiftTargetWatchOption = BoolOption(longFlag: "watch", helpMessage: "Set the target for generated Swift to use WatchKit.")
 
+let versionOption = BoolOption(shortFlag: "v", longFlag: "version", helpMessage: "Prints the version number.")
 let helpOption = BoolOption(shortFlag: "h", longFlag: "help", helpMessage: "Prints a help message.")
 
 
 let cli = CommandLine()
-cli.addOptions(inputPathOption, configurationOption, outputPathOption, swiftDestinationOption, swiftTargetMacOption, swiftTargetiOSOption, swiftTargetWatchOption, overwriteOption, helpOption)
+cli.addOptions(inputPathOption, configurationOption, outputPathOption, swiftDestinationOption, swiftTargetMacOption, swiftTargetiOSOption, swiftTargetWatchOption, overwriteOption, versionOption, helpOption)
 
 
 do {
@@ -55,6 +58,12 @@ if helpOption.value {
     cli.printUsage()
     exit(EX_USAGE)
 }
+
+if versionOption.value {
+    print("XCAssetPacker version \(versionNumber)")
+    exit(EX_USAGE)
+}
+
 
 
 guard inputPathOption.wasSet && outputPathOption.wasSet else {
@@ -140,7 +149,6 @@ do {
     print("Created assets package \(lastPathComponents) containing \(log.numberOfImages) images")
     exit(EXIT_SUCCESS)
 } catch let error as AssetCatalogError {
-    // Report errors to the cli
     switch error {
     case .ioError(let description):
         print(description)
