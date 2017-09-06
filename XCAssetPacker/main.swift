@@ -146,6 +146,13 @@ do {
         print(description)
         exit(EX_IOERR)
     }
+} catch let error as SwiftGenerationError {
+    switch error {
+    case .duplicateProperty(let name, originalFileName: let originalFileName):
+        print("Conflicting property '\(name)' for \(originalFileName)")
+        print("Images need to have distinct llama case representations")
+        exit(EX_IOERR)
+    }
 } catch let error {
     print("Unexpected error: \(String(describing: error))")
     exit(EX_IOERR)

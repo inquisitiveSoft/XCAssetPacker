@@ -239,18 +239,21 @@ class AssetCatalogGenerator {
         }
         
         
-        // Create the folder structure, the metadata and copy the images across
-        var result = try applyChanges(forNode: rootNode, dryRun: dryRun, logLevel: logLevel)
-        
-        
         // Generate Swift code
+        let generatedCode: String?
+        
         if let swiftFileURL = swiftFileURL {
             let code = try swiftCode(forTarget: swiftTarget, rootNode: rootNode)
-            result.code = code
-            
             try code.write(to: swiftFileURL, atomically: true, encoding: .utf8)
+            generatedCode = code
+        } else {
+            generatedCode = nil
         }
-    
+        
+        // Create the folder structure, the metadata and copy the images across
+        var result = try applyChanges(forNode: rootNode, dryRun: dryRun, logLevel: logLevel)
+        result.code = generatedCode
+        
         return result
     }
     

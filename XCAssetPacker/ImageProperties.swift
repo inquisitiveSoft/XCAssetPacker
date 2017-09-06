@@ -4,7 +4,7 @@
 //
 //  Created by Harry Jordan on 23/11/2016.
 //  Copyright © 2016 Inquisitive Software. All rights reserved.
-//	
+//    
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
@@ -38,7 +38,7 @@ struct ImageProperties {
         
         // Look for an image scale e.g. @2x or @3x
         if let match = ImageProperties.scaleRegularExpression.firstMatch(in: adaptedName, range: adaptedName.asNSRange), match.numberOfRanges >= 2 {
-            let rangeOfDigits = match.rangeAt(1)
+            let rangeOfDigits = match.range(at: 1)
             let digitString = (adaptedName as NSString).substring(with: rangeOfDigits)
             
             if let scaleNumber = Int(digitString) {

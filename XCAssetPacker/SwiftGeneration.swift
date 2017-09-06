@@ -21,6 +21,12 @@
 import Foundation
 
 
+enum SwiftGenerationError: Error {
+    case duplicateProperty(name: String, originalFileName: String)
+}
+
+
+
 enum SwiftTarget {
     case cocoa, iOS, watch
     
@@ -108,9 +114,14 @@ extension AssetCatalogGenerator {
         
         for child in childNodes where child.isDirectory && child.isImageSet && !child.isAppIcon {
             let propertyName = child.swiftPropertyName(withinGroup: groupPropertyName)
-            propertyNames.append(propertyName)
             
-            generatedCode += firstIndent + "var \(propertyName): \(target.imageClassName) { return image(named: \"\(child.swiftCatalogName)\") }\n"
+            if propertyNames.contains(propertyName) {
+                throw SwiftGenerationError.duplicateProperty(name: propertyName, originalFileName: child.name)
+            } else {
+                propertyNames.append(propertyName)
+                
+                generatedCode += firstIndent + "var \(propertyName): \(target.imageClassName) { return image(named: \"\(child.swiftCatalogName)\") }\n"
+            }
         }
         
         for child in node.children where child.isDirectory && !child.isImageSet && !child.isAppIcon {

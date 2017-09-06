@@ -194,11 +194,13 @@
 					4A56D1461DE5B573000B40D8 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = D92MT22EX5;
+						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 					};
 					4AD71E7B1EA4CCBA00016A1A = {
 						CreatedOnToolsVersion = 8.3.1;
 						DevelopmentTeam = D92MT22EX5;
+						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -372,7 +374,8 @@
 			buildSettings = {
 				DEVELOPMENT_TEAM = D92MT22EX5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -381,7 +384,8 @@
 			buildSettings = {
 				DEVELOPMENT_TEAM = D92MT22EX5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -397,7 +401,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.inquisitiveSoftware.XCAssetPacker-Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -412,7 +417,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.inquisitiveSoftware.XCAssetPacker-Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
