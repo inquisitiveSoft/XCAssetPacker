@@ -49,7 +49,7 @@ There are a number of image naming conventions which will be auto-detected.
 - In addition `AppIcon` is recognized as a standard icon name. App icons are stored slightly differently internally and will be marked as `prerendered` by default. For example an image named `AppIcon-40@3x.png` would be detected as the spotlight icon for the Plus sized iPhone.
 
 ### Configuration.json
-XCAssetPacker has sensible defaults, so you can get started strait away, but you can also configure it using a JSON file. The most common uses are filtering which images are included, and to set image properties such as target device or rendering intent of images.
+XCAssetPacker has sensible defaults, so you can get started straight away, but you can also configure it using a JSON file. The most common uses are for filtering which images are included, and to set image properties such as target device or rendering intent of images.
 
 ---
 
@@ -92,8 +92,8 @@ Apply properties based on the target device:
 ```
 
 ---
-By default images following the `AppIcon-{size}.png` naming convention
-will be treated as prerendered app icons and won't be exposed to Swift or you can customize the app-icon properties:
+By default, images following the `AppIcon-{size}.png` naming convention
+will be treated as prerendered app icons and won't be exposed to Swift, or you can customize the app-icon properties:
 ```
 "app-icon" : {
 	"pattern" : "Custom App Icon Name.*",
