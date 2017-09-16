@@ -24,7 +24,7 @@ import Foundation
 import Cocoa
 
 
-let versionNumber = "1.11"
+let versionNumber = "1.2"
 
 // Setup command line options
 let inputPathOption = StringOption(shortFlag: "i", longFlag: "input", helpMessage: "Path to the input folder.")
