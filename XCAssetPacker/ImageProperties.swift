@@ -131,11 +131,11 @@ struct ImageProperties {
 
 
 enum ImageType {
-    case watch, watch38, watch42, universal, notification, settings, spotlight, iPhoneAppIcon, iPadAppIcon, iPadProAppIcon
+    case watch, watch38, watch42, universal, notification, settings, spotlight, iPhoneAppIcon, iPadAppIcon, iPadProAppIcon, iTunesPreview
     
     
     static var all: [ImageType] {
-        return [watch, watch38, watch42, universal, notification, settings, spotlight, iPhoneAppIcon, iPadAppIcon, iPadProAppIcon]
+        return [watch, watch38, watch42, universal, notification, settings, spotlight, iPhoneAppIcon, iPadAppIcon, iPadProAppIcon, iTunesPreview]
     }
 
     
@@ -151,6 +151,9 @@ enum ImageType {
         
         case .iPadAppIcon, .iPadProAppIcon:
             idiom = .iPad
+        
+        case .iTunesPreview:
+            idiom = .iOSMarketing
         
         default:
             idiom = nil
@@ -225,6 +228,9 @@ enum ImageType {
         case .iPadProAppIcon:
             return "-83.5"
         
+        case .iTunesPreview:
+            return "-1024"
+        
         case .universal:
             return nil
         }
@@ -250,6 +256,9 @@ enum ImageType {
         
         case .iPadProAppIcon:
             return "83.5x83.5"
+            
+        case .iTunesPreview:
+            return "1024x1024"
         
         default:
             return nil

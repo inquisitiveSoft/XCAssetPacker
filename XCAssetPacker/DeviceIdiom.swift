@@ -10,9 +10,9 @@ import Foundation
 
 
 public enum DeviceIdiom: String {
-    case watch, iPhone, iPad
+    case watch, iPhone, iPad, iOSMarketing
     
-    static var all: [DeviceIdiom] = [watch, iPhone, iPad]
+    static var all: [DeviceIdiom] = [watch, iPhone, iPad, iOSMarketing]
     
     
     init?(_ idiomString: String) {
@@ -39,6 +39,9 @@ public enum DeviceIdiom: String {
         
         case .iPad:
             return "ipad"
+            
+        case .iOSMarketing:
+            return "ios-marketing"
         }
     }
 
