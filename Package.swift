@@ -9,7 +9,7 @@ pkg.dependencies = [
 ]
 
 let pmk: Target = .target(name: "XCAssetPacker", dependencies: [])
-pmk.path = "Sources"
+pmk.path = "XCAssetPacker"
 
 pkg.targets = [
     pmk
