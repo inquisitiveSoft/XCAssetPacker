@@ -106,8 +106,8 @@ struct ImageProperties {
                 // Look for a base scale in the configuration file
                 return scaleString
             } else {
-                // Otherwise default to 1x
-                return "1x"
+                // Otherwise return nil, for matching vector files without a scale
+                return nil
             }
         }
     }
